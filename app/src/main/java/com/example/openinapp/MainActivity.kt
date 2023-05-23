@@ -2,23 +2,16 @@ package com.example.openinapp
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
 import android.graphics.Color
-import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.components.XAxis
-import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
-import com.github.mikephil.charting.formatter.ValueFormatter
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.get
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.openinapp.databinding.ActivityMainBinding
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.data.LineDataSet
@@ -26,6 +19,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
@@ -43,12 +37,8 @@ class MainActivity : AppCompatActivity() {
             ViewModelProvider(this, AppViewModelFactory(resultRepo)).get(AppViewModel::class.java)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         setGreeting()
-        appViewModel.apiResult.observe(this, Observer {
-            Log.d("ramsita", it.toString())
-        })
         runBlocking {
             val job = launch {
-                openInAppApi
                 val result = appViewModel.getResults()
                 if (result.body() != null) {
                     rams = result.body()
@@ -93,7 +83,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun setLineChart() {
         lineChart = binding.lineChart
-        var s = rams?.data?.overall_url_chart
+        val s = rams?.data?.overall_url_chart
         val entries = mutableListOf<Entry>()
         if (s != null) {
             entries.add(Entry(0f, s.`2023-04-22`.toFloat()))
@@ -164,7 +154,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun setGreeting() {
         val time = Calendar.getInstance().time
-        val f = SimpleDateFormat("HH")
+        val f = SimpleDateFormat("HH", Locale.getDefault())
         val current = f.format(time)
         binding.greet.text = if (current.toInt() in 8..12) "Good Morning"
         else if (current.toInt() in 13..18) "Good Afternoon"
@@ -174,25 +164,23 @@ class MainActivity : AppCompatActivity() {
 
     private fun setBG(isBlue: Boolean, tv: TextView) {
         if (isBlue) {
-            tv.background = resources.getDrawable(R.drawable.blue_bg)
+            tv.setBackgroundResource(R.drawable.blue_bg)
             tv.setTextColor(ContextCompat.getColor(this, R.color.white))
         } else {
-            tv.background = resources.getDrawable(R.color.grey)
+            tv.setBackgroundResource(R.color.my_grey)
             tv.setTextColor(ContextCompat.getColor(this, R.color.brown))
         }
     }
 
     private fun setUpTopLinkRV() {
         linkAdapter = LinkAdapter(rams?.data?.top_links as ArrayList<TopLink>)
-        val rv = findViewById<RecyclerView>(R.id.rv)
-        rv.layoutManager = LinearLayoutManager(this)
-        rv.adapter = linkAdapter
+        binding.rv.layoutManager = LinearLayoutManager(this)
+        binding.rv.adapter = linkAdapter
     }
 
     private fun setUpRecentLinkRV() {
         linkAdapter = LinkAdapter(rams?.data?.recent_links as ArrayList<TopLink>)
-        val rv = findViewById<RecyclerView>(R.id.rv)
-        rv.layoutManager = LinearLayoutManager(this)
-        rv.adapter = linkAdapter
+        binding.rv.layoutManager = LinearLayoutManager(this)
+        binding.rv.adapter = linkAdapter
     }
 }

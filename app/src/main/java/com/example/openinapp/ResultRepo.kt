@@ -7,7 +7,8 @@ import retrofit2.Response
 class ResultRepo(private val openInAppApi: OpenInAppApi) {
     private val resultLiveData = MutableLiveData<ApiResult>()
     val res: LiveData<ApiResult>
-    get() = resultLiveData
+        get() = resultLiveData
+
     suspend fun getResults(): Response<ApiResult> {
         return openInAppApi.getResults()
     }

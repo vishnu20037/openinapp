@@ -6,5 +6,5 @@ import retrofit2.http.GET
 
 interface OpenInAppApi {
     @GET("dashboardNew")
-     suspend fun getResults(): Response<ApiResult>
+    suspend fun getResults(): Response<ApiResult>
 }
