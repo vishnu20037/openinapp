@@ -31,7 +31,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        val openInAppApi = RetrofitHelper.getInstance().create(OpenInAppApi::class.java)
+        val openInAppApi = RetrofitHelper.getInstance(this).create(OpenInAppApi::class.java)
         val resultRepo = ResultRepo(openInAppApi)
         appViewModel =
             ViewModelProvider(this, AppViewModelFactory(resultRepo)).get(AppViewModel::class.java)
